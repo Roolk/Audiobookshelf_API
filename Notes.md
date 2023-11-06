@@ -224,13 +224,13 @@
 
 # Schema
 
-- [ ] Library
-- [ ] Library Settings
-- [ ] Library Filter Dta
-- [ ] Folder
-- [ ] Library Item
-- [ ] Book
-- [ ] Book Metadata
+- [x] Library
+- [x] Library Settings
+- [x] Library Filter Dta
+- [x] Folder
+- [x] Library Item
+- [x] Book
+- [x] Book Metadata
 - [ ] Book Chapter
 - [ ] Podcast
 - [ ] Podcast Episode
@@ -244,8 +244,8 @@
 - [ ] EBook File
 - [ ] Library File
 - [ ] File Metadata
-- [ ] Author
-- [ ] Series
+- [x] Author
+- [x] Series
 - [ ] Collections
 - [ ] Playlist
 - [ ] Playlist Item
