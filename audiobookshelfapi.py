@@ -5,7 +5,7 @@ from audiobookshelfenums import *
 import json
 
 
-class Audiobookshelf_API:
+class AudiobookshelfAPI:
 
     def __init__(self, url, api_token):
         self.api_token = api_token
@@ -16,7 +16,8 @@ class Audiobookshelf_API:
         self.base_url = url
         self.api_url = self.base_url + "/api"
         self.libraries_url = self.api_url + '/libraries'
-        if not self.ping(): raise "Failed to ping server"
+        if not self.ping():
+            raise "Failed to ping server"
 
     def _send_get_request(self, url: str) -> requests.Response:
         try:
@@ -28,15 +29,15 @@ class Audiobookshelf_API:
         except json.JSONDecodeError as e:
             raise Exception(f"JSON parsing error: {e}")
 
-    def _send_patch_request(self, url: str, jsonData: dict) -> requests.Response:
-      try:
-        response = requests.patch(url, headers=self.headers, json=jsonData)
-        response.raise_for_status()  # Raise an exception for non-2xx status codes
-        return response
-      except requests.exceptions.RequestException as e:
-        raise Exception(f"Request error: {e}")
-      except json.JSONDecodeError as e:
-        raise Exception(f"JSON parsing error: {e}")
+    def _send_patch_request(self, url: str, json_data: dict) -> requests.Response:
+        try:
+            response = requests.patch(url, headers=self.headers, json=json_data)
+            response.raise_for_status()  # Raise an exception for non-2xx status codes
+            return response
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Request error: {e}")
+        except json.JSONDecodeError as e:
+            raise Exception(f"JSON parsing error: {e}")
 
     def ping(self):
         url = f"{self.base_url}/ping"
@@ -77,8 +78,8 @@ class Audiobookshelf_API:
 
     def get_all_libraries(self) -> List[Library]:
         """
-        Get all the libraries in the audiobookshelf instance
-        Returns: (List[Library]) all libraries in audiobookshelf instance
+        Get all the libraries in the Audiobookshelf instance
+        Returns: (List[Library]) all libraries in Audiobookshelf instance
 
        """
         url = self.libraries_url
@@ -113,7 +114,8 @@ class Audiobookshelf_API:
         Args:
             id (str): The ID of the library to be updated.
             name (Optional[str]): The updated name for the library.
-            folders (Optional[List[Folder]]): A list of Folder objects representing the library's folders, must include all folders for the library.
+            folders (Optional[List[Folder]]): A list of Folder objects representing the library's folders,
+                                              must include all folders for the library.
             display_order (Optional[int]): The new display order for the library (must be >= 1).
             icon (Optional[Icon]): The updated icon for the library.
             provider (Optional[Provider]): The preferred metadata provider for the library.
@@ -126,8 +128,8 @@ class Audiobookshelf_API:
             Exception: If no fields to update are provided, an exception is raised.
 
         Note:
-            The `id` parameter is required, and at least one of the optional parameters (e.g., `name`, `folders`, `display_order`,
-            `icon`, `provider`, or `settings`) should be provided to make changes to the library.
+            The `id` parameter is required, and at least one of the optional parameters (e.g., `name`, `folders`,
+             `display_order`, `icon`, `provider`, or `settings`) should be provided to make changes to the library.
 
         Example:
             To update the name of a library with ID 'abc123', you can call the method as follows:
@@ -154,17 +156,17 @@ class Audiobookshelf_API:
         if not payload:
             raise Exception("No fields to update")
 
-        response = self._send_patch_request(url, jsonData=payload)
+        response = self._send_patch_request(url, json_data=payload)
         return Library.from_dict(response.json())
 
 
 def delete_library(self, id: str) -> Library:
     url = self.libraries_url + "/" + id
     response = requests.delete(url, headers=self.headers)
-    return Library.from_json(response.json())
+    return Library.from_dict(response.json())
 
 
 def get_all_library_items(self, library_id: str) -> list[Library]:
     url = self.libraries_url + "/" + library_id + "/items"
     response = requests.get(url, headers=self.headers)
-    return [Library.from_json(library) for library in response.json()]
+    return [Library.from_dict(library) for library in response.json()]
