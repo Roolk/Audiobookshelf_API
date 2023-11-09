@@ -224,25 +224,26 @@
 
 # Schema
 
-- [ ] Library
+- [x] Library
 - [x] Library Settings
 - [x] Library Filter Dta
 - [x] Folder
 - [x] Library Item
-- [ ] Book
-- [ ] Book Metadata
-- [ ] Book Chapter
-- [ ] Podcast
-- [ ] Podcast Episode
-- [ ] Podcast Episode Enclosure
-- [ ] Podcast Episode Download
+- [x] Book
+- [x] Book Metadata
+- [x] Book Chapter
+- [x] Podcast
+- [x] Podcast Episode
+- [x] Podcast Episode Enclosure
+- [x] Podcast Episode Download
 - [ ] Podcast Feed
-- [ ] Podcast Feed Meta
+- [ ] Podcast Feed Metadata
+- [ ] Podcast Feed Episode
 - [x] Audio File
-- [ ] Audio Meta Tags
-- [ ] Audio Track
-- [ ] EBook File
-- [ ] Library File
+- [x] Audio Meta Tags
+- [x] Audio Track
+- [x] EBook File
+- [x] Library File
 - [x] File Metadata
 - [x] Author
 - [x] Series

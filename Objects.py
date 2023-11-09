@@ -119,7 +119,7 @@ class AudioFile(Base):
 
 
 @dataclass
-class AudioMetadata(Base):
+class AudioMetaTags(Base):
     """
     Represents ID3 metadata tags pulled from the audio file on import.
 
@@ -185,6 +185,29 @@ class AudioMetadata(Base):
     tagMusicBrainzAlbumId: Optional[str]
     tagMusicBrainzAlbumArtistId: Optional[str]
     tagMusicBrainzArtistId: Optional[str]
+
+
+@dataclass
+class AudioTrack(Base):
+    """
+    Represents an audio track.
+
+    Attributes:
+        index (int): The index of the audio track.
+        startOffset (float): When in the audio file (in seconds) the track starts.
+        duration (float): The length (in seconds) of the audio track.
+        title (str): The filename of the audio file the audio track belongs to.
+        contentUrl (str): The URL path of the audio file.
+        mimeType (str): The MIME type of the audio file.
+        metadata (FileMetadata or None): The metadata of the audio file. Will be null if there is none.
+    """
+    index: int
+    startOffset: float
+    duration: float
+    title: str
+    contentUrl: str
+    mimeType: str
+    metadata: Optional[Type['FileMetadata']]
 
 
 @dataclass
@@ -334,6 +357,23 @@ class BookMinified(Base):
 
 
 @dataclass
+class BookChapter(Base):
+    """
+    Represents a chapter in a book.
+
+    Attributes:
+        id (int): The ID of the book chapter.
+        start (float): When in the book (in seconds) the chapter starts.
+        end (float): When in the book (in seconds) the chapter ends.
+        title (str): The title of the chapter.
+    """
+    id: int
+    start: float
+    end: float
+    title: str
+
+
+@dataclass
 class BookMetadata(Base):
     """
     Represents metadata for a book.
@@ -456,6 +496,25 @@ class BookMetadataMinified(Base):
     asin: Optional[str]
     language: Optional[str]
     explicit: bool
+
+
+@dataclass
+class EBookFile(Base):
+    """
+    Represents an ebook file.
+
+    Attributes:
+        ino (str): The inode of the ebook file.
+        metadata (FileMetadata): The metadata of the ebook file.
+        ebookFormat (str): The ebook format of the ebook file.
+        addedAt (int): The time (in ms since POSIX epoch) when the ebook file was added.
+        updatedAt (int): The time (in ms since POSIX epoch) when the ebook file was last updated.
+    """
+    ino: str
+    metadata: Type['FileMetadata']
+    ebookFormat: str
+    addedAt: int
+    updatedAt: int
 
 
 @dataclass
@@ -627,8 +686,6 @@ class LibraryItem(Base):
             else:
                 self.media = Podcast.from_dict(self.media)
 
-        # if self.libraryFiles is not None and is :
-
 
 @dataclass
 class LibrarySettings(Base):
@@ -648,6 +705,353 @@ class LibrarySettings(Base):
     skipMatchingMediaWithAsin: bool
     skipMatchingMediaWithIsbn: bool
     autoScanCronExpression: Optional[str]
+
+
+@dataclass
+class Podcast(Base):
+    """
+    Represents a podcast.
+
+    Attributes:
+        libraryItemId (str): The ID of the library item that contains the podcast.
+        metadata (PodcastMetadata): The metadata for the podcast.
+        coverPath (str or None): The absolute path on the server of the cover file. Will be None if there is no cover.
+        tags (List[str]): The podcast's tags.
+        episodes (List[PodcastEpisode]): The downloaded episodes of the podcast.
+        autoDownloadEpisodes (bool): Whether the server will automatically download podcast episodes according to the schedule.
+        autoDownloadSchedule (str or None): The cron expression for when to automatically download podcast episodes.
+            Will not exist if autoDownloadEpisodes is false.
+        lastEpisodeCheck (int): The time (in ms since POSIX epoch) when the podcast was checked for new episodes.
+        maxEpisodesToKeep (int): The maximum number of podcast episodes to keep when automatically downloading new episodes.
+            Episodes beyond this limit will be deleted. If 0, all episodes will be kept.
+        maxNewEpisodesToDownload (int): The maximum number of podcast episodes to download when automatically downloading new episodes.
+            If 0, all episodes will be downloaded.
+    """
+    libraryItemId: str
+    metadata: Type['PodcastMetadata']
+    coverPath: Optional[str]
+    tags: List[str]
+    episodes: List[Type['PodcastEpisode']]
+    autoDownloadEpisodes: bool
+    autoDownloadSchedule: Optional[str]
+    lastEpisodeCheck: int
+    maxEpisodesToKeep: int
+    maxNewEpisodesToDownload: int
+
+
+@dataclass
+class PodcastExpanded(Base):
+    """
+    Represents an expanded version of a podcast.
+
+    Attributes:
+        libraryItemId (str): The ID of the library item that contains the podcast.
+        metadata (PodcastMetadataExpanded): The metadata for the podcast.
+        coverPath (str or None): The absolute path on the server of the cover file. Will be None if there is no cover.
+        tags (List[str]): The podcast's tags.
+        episodes (List[PodcastEpisodeExpanded]): The downloaded episodes of the podcast.
+        autoDownloadEpisodes (bool): Whether the server will automatically download podcast episodes according to the schedule.
+        autoDownloadSchedule (str or None): The cron expression for when to automatically download podcast episodes.
+            Will not exist if autoDownloadEpisodes is false.
+        lastEpisodeCheck (int): The time (in ms since POSIX epoch) when the podcast was checked for new episodes.
+        maxEpisodesToKeep (int): The maximum number of podcast episodes to keep when automatically downloading new episodes.
+            Episodes beyond this limit will be deleted. If 0, all episodes will be kept.
+        maxNewEpisodesToDownload (int): The maximum number of podcast episodes to download when automatically downloading new episodes.
+            If 0, all episodes will be downloaded.
+        size (int): The total size (in bytes) of the podcast.
+    """
+    libraryItemId: str
+    metadata: Type['PodcastMetadataExpanded']
+    coverPath: Optional[str]
+    tags: List[str]
+    episodes: List[Type['PodcastEpisodeExpanded']]
+    autoDownloadEpisodes: bool
+    autoDownloadSchedule: Optional[str]
+    lastEpisodeCheck: int
+    maxEpisodesToKeep: int
+    maxNewEpisodesToDownload: int
+    size: int
+
+
+@dataclass
+class PodcastMinified(Base):
+    """
+    Represents a minified version of a podcast.
+
+    Attributes:
+        metadata (PodcastMetadataMinified): The metadata for the podcast.
+        coverPath (str or None): The absolute path on the server of the cover file. Will be None if there is no cover.
+        tags (List[str]): The podcast's tags.
+        autoDownloadEpisodes (bool): Whether the server will automatically download podcast episodes according to the schedule.
+        autoDownloadSchedule (str or None): The cron expression for when to automatically download podcast episodes.
+            Will not exist if autoDownloadEpisodes is false.
+        lastEpisodeCheck (int): The time (in ms since POSIX epoch) when the podcast was checked for new episodes.
+        maxEpisodesToKeep (int): The maximum number of podcast episodes to keep when automatically downloading new episodes.
+            Episodes beyond this limit will be deleted. If 0, all episodes will be kept.
+        maxNewEpisodesToDownload (int): The maximum number of podcast episodes to download when automatically downloading new episodes.
+            If 0, all episodes will be downloaded.
+        numEpisodes (int): The number of downloaded episodes for the podcast.
+        size (int): The total size (in bytes) of the podcast.
+    """
+    metadata: Type['PodcastMetadataMinified']
+    coverPath: Optional[str]
+    tags: List[str]
+    autoDownloadEpisodes: bool
+    autoDownloadSchedule: Optional[str]
+    lastEpisodeCheck: int
+    maxEpisodesToKeep: int
+    maxNewEpisodesToDownload: int
+    numEpisodes: int
+    size: int
+
+
+@dataclass
+class PodcastEpisode(Base):
+    """
+    Represents a podcast episode.
+
+    Attributes:
+        libraryItemId (str): The ID of the library item that contains the podcast.
+        id (str): The ID of the podcast episode.
+        index (int): The index of the podcast episode.
+        season (str or None): The season of the podcast episode, if known.
+        episode (str or None): The episode of the season of the podcast, if known.
+        episodeType (str): The type of episode that the podcast episode is.
+        title (str): The title of the podcast episode.
+        subtitle (str or None): The subtitle of the podcast episode.
+        description (str): A HTML encoded, description of the podcast episode.
+        enclosure (PodcastEpisodeEnclosure): Information about the podcast episode from when it was downloaded.
+        pubDate (str): When the podcast episode was published.
+        audioFile (AudioFile): The audio file for the podcast episode.
+        publishedAt (int): The time (in ms since POSIX epoch) when the podcast episode was published.
+        addedAt (int): The time (in ms since POSIX epoch) when the podcast episode was added to the library.
+        updatedAt (int): The time (in ms since POSIX epoch) when the podcast episode was last updated.
+    """
+    libraryItemId: str
+    id: str
+    index: int
+    season: Optional[str]
+    episode: Optional[str]
+    episodeType: str
+    title: str
+    subtitle: Optional[str]
+    description: str
+    enclosure: Type['PodcastEpisodeEnclosure']
+    pubDate: str
+    audioFile: AudioFile
+    publishedAt: int
+    addedAt: int
+    updatedAt: int
+
+
+@dataclass
+class PodcastEpisodeExpanded(Base):
+    """
+    Represents a podcast episode.
+
+    Attributes:
+        libraryItemId (str): The ID of the library item that contains the podcast.
+        id (str): The ID of the podcast episode.
+        index (int): The index of the podcast episode.
+        season (str or None): The season of the podcast episode, if known.
+        episode (str or None): The episode of the season of the podcast, if known.
+        episodeType (str): The type of episode that the podcast episode is.
+        title (str): The title of the podcast episode.
+        subtitle (str or None): The subtitle of the podcast episode.
+        description (str): A HTML encoded, description of the podcast episode.
+        enclosure (PodcastEpisodeEnclosure): Information about the podcast episode from when it was downloaded.
+        pubDate (str): When the podcast episode was published.
+        audioFile (AudioFile): The audio file for the podcast episode.
+        publishedAt (int): The time (in ms since POSIX epoch) when the podcast episode was published.
+        addedAt (int): The time (in ms since POSIX epoch) when the podcast episode was added to the library.
+        updatedAt (int): The time (in ms since POSIX epoch) when the podcast episode was last updated.
+        audioTrack (AudioTrack): The podcast episode's audio tracks from the audio file.
+        duration (float): The total length (in seconds) of the podcast episode.
+        size (int): The total size (in bytes) of the podcast episode.
+    """
+    libraryItemId: str
+    id: str
+    index: int
+    season: Optional[str]
+    episode: Optional[str]
+    episodeType: str
+    title: str
+    subtitle: Optional[str]
+    description: str
+    enclosure: Type['PodcastEpisodeEnclosure']
+    pubDate: str
+    audioFile: AudioFile
+    publishedAt: int
+    addedAt: int
+    updatedAt: int
+    audioTrack: Type['AudioTrack']
+    duration: float
+    size: int
+
+
+@dataclass
+class PodcastEpisodeDownload(Base):
+    """
+    Represents a podcast episode download.
+
+    Attributes:
+        id (str): The ID of the podcast episode download.
+        episodeDisplayTitle (str): The display title of the episode to be downloaded.
+        url (str): The URL from which to download the episode.
+        libraryItemId (str): The ID of the library item the episode belongs to.
+        libraryId (str): The ID of the library the episode's podcast belongs to.
+        isFinished (bool): Whether the episode has finished downloading.
+        failed (bool): Whether the episode failed to download.
+        startedAt (int or None): The time (in ms since POSIX epoch) when the episode started downloading.
+        createdAt (int): The time (in ms since POSIX epoch) when the podcast episode download request was created.
+        finishedAt (int or None): The time (in ms since POSIX epoch) when the episode finished downloading.
+        podcastTitle (str or None): The title of the episode's podcast.
+        podcastExplicit (bool): Whether the episode's podcast is explicit.
+        season (str or None): The season of the podcast episode.
+        episode (str or None): The episode number of the podcast episode.
+        episodeType (str): The type of the podcast episode.
+        publishedAt (int or None): The time (in ms since POSIX epoch) when the episode was published.
+    """
+    id: str
+    episodeDisplayTitle: str
+    url: str
+    libraryItemId: str
+    libraryId: str
+    isFinished: bool
+    failed: bool
+    startedAt: Optional[int]
+    createdAt: int
+    finishedAt: Optional[int]
+    podcastTitle: Optional[str]
+    podcastExplicit: bool
+    season: Optional[str]
+    episode: Optional[str]
+    episodeType: str
+    publishedAt: Optional[int]
+
+
+@dataclass
+class PodcastEpisodeEnclosure(Base):
+    """
+    Represents the enclosure information for a podcast episode.
+
+    Attributes:
+        url (str): The URL where the podcast episode's audio file was downloaded from.
+        type (str): The MIME type of the podcast episode's audio file.
+        length (str): The size (in bytes) that was reported when downloading the podcast episode's audio file.
+    """
+    url: str
+    type: str
+    length: str
+
+
+@dataclass
+class PodcastMetadata(Base):
+    """
+    Represents the metadata for a podcast.
+
+    Attributes:
+        title (str or None): The title of the podcast. Will be None if unknown.
+        author (str or None): The author of the podcast. Will be None if unknown.
+        description (str or None): The description for the podcast. Will be None if unknown.
+        releaseDate (str or None): The release date of the podcast. Will be None if unknown.
+        genres (List[str]): The podcast's genres.
+        feedUrl (str or None): A URL of an RSS feed for the podcast. Will be None if unknown.
+        imageUrl (str or None): A URL of a cover image for the podcast. Will be None if unknown.
+        itunesPageUrl (str or None): A URL of an iTunes page for the podcast. Will be None if unknown.
+        itunesId (int or None): The iTunes ID for the podcast. Will be None if unknown.
+        itunesArtistId (int or None): The iTunes Artist ID for the author of the podcast. Will be None if unknown.
+        explicit (bool): Whether the podcast has been marked as explicit.
+        language (str or None): The language of the podcast. Will be None if unknown.
+        type (str or None): The type of podcast. Will be None if unknown.
+    """
+    title: Optional[str]
+    author: Optional[str]
+    description: Optional[str]
+    releaseDate: Optional[str]
+    genres: List[str]
+    feedUrl: Optional[str]
+    imageUrl: Optional[str]
+    itunesPageUrl: Optional[str]
+    itunesId: Optional[int]
+    itunesArtistId: Optional[int]
+    explicit: bool
+    language: Optional[str]
+    type: Optional[str]
+
+
+@dataclass
+class PodcastMetadataExpanded(Base):
+    """
+    Represents the metadata for a podcast.
+
+    Attributes:
+        title (str or None): The title of the podcast. Will be None if unknown.
+        titleIgnorePrefix (str): The title of the podcast with any prefix moved to the end.
+        author (str or None): The author of the podcast. Will be None if unknown.
+        description (str or None): The description for the podcast. Will be None if unknown.
+        releaseDate (str or None): The release date of the podcast. Will be None if unknown.
+        genres (List[str]): The podcast's genres.
+        feedUrl (str or None): A URL of an RSS feed for the podcast. Will be None if unknown.
+        imageUrl (str or None): A URL of a cover image for the podcast. Will be None if unknown.
+        itunesPageUrl (str or None): A URL of an iTunes page for the podcast. Will be None if unknown.
+        itunesId (int or None): The iTunes ID for the podcast. Will be None if unknown.
+        itunesArtistId (int or None): The iTunes Artist ID for the author of the podcast. Will be None if unknown.
+        explicit (bool): Whether the podcast has been marked as explicit.
+        language (str or None): The language of the podcast. Will be None if unknown.
+        type (str or None): The type of podcast. Will be None if unknown.
+    """
+    title: Optional[str]
+    titleIgnorePrefix: str
+    author: Optional[str]
+    description: Optional[str]
+    releaseDate: Optional[str]
+    genres: List[str]
+    feedUrl: Optional[str]
+    imageUrl: Optional[str]
+    itunesPageUrl: Optional[str]
+    itunesId: Optional[int]
+    itunesArtistId: Optional[int]
+    explicit: bool
+    language: Optional[str]
+    type: Optional[str]
+
+
+@dataclass
+class PodcastMetadataMinified(Base):
+    """
+    Represents the metadata for a podcast.
+
+    Attributes:
+        title (str or None): The title of the podcast. Will be None if unknown.
+        titleIgnorePrefix (str): The title of the podcast with any prefix moved to the end.
+        author (str or None): The author of the podcast. Will be None if unknown.
+        description (str or None): The description for the podcast. Will be None if unknown.
+        releaseDate (str or None): The release date of the podcast. Will be None if unknown.
+        genres (List[str]): The podcast's genres.
+        feedUrl (str or None): A URL of an RSS feed for the podcast. Will be None if unknown.
+        imageUrl (str or None): A URL of a cover image for the podcast. Will be None if unknown.
+        itunesPageUrl (str or None): A URL of an iTunes page for the podcast. Will be None if unknown.
+        itunesId (int or None): The iTunes ID for the podcast. Will be None if unknown.
+        itunesArtistId (int or None): The iTunes Artist ID for the author of the podcast. Will be None if unknown.
+        explicit (bool): Whether the podcast has been marked as explicit.
+        language (str or None): The language of the podcast. Will be None if unknown.
+        type (str or None): The type of podcast. Will be None if unknown.
+    """
+    title: Optional[str]
+    titleIgnorePrefix: str
+    author: Optional[str]
+    description: Optional[str]
+    releaseDate: Optional[str]
+    genres: List[str]
+    feedUrl: Optional[str]
+    imageUrl: Optional[str]
+    itunesPageUrl: Optional[str]
+    itunesId: Optional[int]
+    itunesArtistId: Optional[int]
+    explicit: bool
+    language: Optional[str]
+    type: Optional[str]
 
 
 @dataclass
