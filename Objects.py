@@ -2,9 +2,12 @@ import typing
 from dataclasses import dataclass, asdict, fields
 from typing import Optional, List, Union, Type
 
-__all__ = ['Author', 'AuthorExpanded', 'AuthorMinified', 'Book', 'BookExpanded', 'BookMinified', 'BookMetadata',
-           'BookMetadataExpanded', 'BookMetadataMinified', 'Folder', 'Library', 'LibraryFilterData', 'LibraryItem',
-           'LibrarySettings', 'Series', 'SeriesBooks', 'SeriesNumBooks', 'SeriesSequence']
+__all__ = ['AudioFile', 'AudioMetaTags', 'AudioTrack', 'Author', 'AuthorExpanded', 'AuthorMinified', 'Book',
+           'BookExpanded', 'BookMinified', 'BookMetadata', 'BookMetadataExpanded', 'BookMetadataMinified', 'EBookFile',
+           'FileMetadata', 'Folder', 'Library', 'LibraryFile', 'LibraryFilterData', 'LibraryItem', 'LibrarySettings',
+           'Podcast', 'PodcastExpanded', 'PodcastMinified', 'PodcastEpisode', 'PodcastEpisodeExpanded',
+           'PodcastEpisodeDownload', 'PodcastEpisodeEnclosure', 'PodcastMetadata', 'PodcastMetadataExpanded',
+           'PodcastMetadataMinified', 'Series', 'SeriesBooks', 'SeriesNumBooks', 'SeriesSequence']
 
 
 @dataclass
