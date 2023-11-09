@@ -14,7 +14,7 @@
 - [x] get library
 - [x] update library
 - [ ] delete library
-- [ ] Get library items
+- [x] Get library items
 - [ ] Remove Library Items with issues
 - [ ] Get a library podcast episode download
 - [ ] Get a Library's series
@@ -224,13 +224,13 @@
 
 # Schema
 
-- [x] Library
+- [ ] Library
 - [x] Library Settings
 - [x] Library Filter Dta
 - [x] Folder
 - [x] Library Item
-- [x] Book
-- [x] Book Metadata
+- [ ] Book
+- [ ] Book Metadata
 - [ ] Book Chapter
 - [ ] Podcast
 - [ ] Podcast Episode
@@ -238,12 +238,12 @@
 - [ ] Podcast Episode Download
 - [ ] Podcast Feed
 - [ ] Podcast Feed Meta
-- [ ] Audio File
+- [x] Audio File
 - [ ] Audio Meta Tags
 - [ ] Audio Track
 - [ ] EBook File
 - [ ] Library File
-- [ ] File Metadata
+- [x] File Metadata
 - [x] Author
 - [x] Series
 - [ ] Collections

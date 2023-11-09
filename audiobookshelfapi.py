@@ -47,17 +47,34 @@ class AudiobookshelfAPI:
     def create_library(self, name: str, folders_path: List[str], icon: Icon,
                        media_type: str, provider: Provider) -> Library:
         """
-        Creates a new library with the give arguments.
+        Creates a new library with the provided attributes.
 
         Args:
-          name: name of the library
-          folders_path: the path of the folder for the new library
-          icon: Icon to use for the new library
-          media_type: book or podcast
-          provider: Provider for the new library
+            name (str): The name of the new library.
+            folders_path (List[str]): A list of folder paths to be associated with the library.
+            icon (Icon): The icon to be used for the new library.
+            media_type (str): The type of media that the library will contain, either 'book' or 'podcast'.
+            provider (Provider): The preferred metadata provider for the new library.
 
-        Returns: the newly created library
+        Returns:
+            Library: The newly created Library object.
 
+        Raises:
+            Exception: If the server responds with a status code other than 200, an exception is raised.
+
+        Note:
+            When updating folders you must pass in the full array of folders. Any missing folders from the array
+             will be removed. New folders must not have an id set because this will be set automatically.
+
+        Example:
+            To create a new library with the specified attributes, you can call the method as follows:
+            ```
+            new_library = create_library(name='My New Library',
+                                         folders_path=['/path/to/folder1', '/path/to/folder2'],
+                                         icon=Icon.SOME_ICON,
+                                         media_type='book',
+                                         provider=Provider.SOME_PROVIDER)
+            ```
         """
         url = self.libraries_url
         d = {}
@@ -159,14 +176,20 @@ class AudiobookshelfAPI:
         response = self._send_patch_request(url, json_data=payload)
         return Library.from_dict(response.json())
 
+    def get_all_library_items(self, library_id: str) -> list[LibraryItem]:
+        url = f"{self.libraries_url}/{library_id}/items"
+        response = self._send_get_request(url)
+        # print(json.dumps(response.json(), indent=2))
+        return [LibraryItem.from_dict(item) for item in response.json()['results']]
 
+
+# deprecieted methods that no longer work
+
+"""
 def delete_library(self, id: str) -> Library:
     url = self.libraries_url + "/" + id
     response = requests.delete(url, headers=self.headers)
     return Library.from_dict(response.json())
 
 
-def get_all_library_items(self, library_id: str) -> list[Library]:
-    url = self.libraries_url + "/" + library_id + "/items"
-    response = requests.get(url, headers=self.headers)
-    return [Library.from_dict(library) for library in response.json()]
+"""
