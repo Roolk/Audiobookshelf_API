@@ -3,11 +3,12 @@ from dataclasses import dataclass, asdict, fields
 from typing import Optional, List, Union, Type
 
 __all__ = ['AudioFile', 'AudioMetaTags', 'AudioTrack', 'Author', 'AuthorExpanded', 'AuthorMinified', 'Book',
-           'BookExpanded', 'BookMinified', 'BookMetadata', 'BookMetadataExpanded', 'BookMetadataMinified', 'EBookFile',
-           'FileMetadata', 'Folder', 'Library', 'LibraryFile', 'LibraryFilterData', 'LibraryItem', 'LibrarySettings',
-           'Podcast', 'PodcastExpanded', 'PodcastMinified', 'PodcastEpisode', 'PodcastEpisodeExpanded',
-           'PodcastEpisodeDownload', 'PodcastEpisodeEnclosure', 'PodcastMetadata', 'PodcastMetadataExpanded',
-           'PodcastMetadataMinified', 'Series', 'SeriesBooks', 'SeriesNumBooks', 'SeriesSequence']
+           'BookExpanded', 'BookMinified', 'BookMetadata', 'BookMetadataExpanded', 'BookMetadataMinified', 'Collection',
+           'CollectionExpanded','EBookFile', 'FileMetadata', 'Folder', 'Library', 'LibraryFile', 'LibraryFilterData',
+           'LibraryItem', 'LibrarySettings', 'Playlist', 'PlaylistExpanded', 'PlaylistItem', 'PlaylistItemExpanded', 'Podcast', 'PodcastExpanded', 'PodcastMinified', 'PodcastEpisode',
+           'PodcastEpisodeExpanded', 'PodcastEpisodeDownload', 'PodcastEpisodeEnclosure', 'PodcastMetadata',
+           'PodcastMetadataExpanded', 'PodcastMetadataMinified', 'Series', 'SeriesBooks', 'SeriesNumBooks',
+           'SeriesSequence']
 
 
 @dataclass
@@ -525,7 +526,6 @@ class Collection(Base):
     createdAt: int
 
 
-
 @dataclass
 class CollectionExpanded(Base):
     """
@@ -708,8 +708,8 @@ class LibraryItem(Base):
         libraryFiles (List[LibraryFile] or None): The files of the library item.
 
     Notes:
-        libraryFiles is not defined as optional in the audiobookshelf api but get_all_library_items does not return the
-        libraryFiles array
+        libraryFiles is not defined as optional in the audiobookshelf API docs, but get_all_library_items does not return the
+        libraryFiles array.
     """
     id: str
     ino: str
@@ -738,7 +738,6 @@ class LibraryItem(Base):
                 self.media = Book.from_dict(self.media)
             else:
                 self.media = Podcast.from_dict(self.media)
-
 
 
 @dataclass
@@ -800,6 +799,59 @@ class LibraryItemExpanded(Base):
             else:
                 self.media = PodcastExpanded.from_dict(self.media)
 
+
+class LibraryItemMinified(Base):
+    """
+    Represents a minified version of a library item.
+
+    Attributes:
+        id (str): The ID of the library item.
+        ino (str): The inode of the library item.
+        libraryId (str): The ID of the library the item belongs to.
+        folderId (str): The ID of the folder the library item is in.
+        path (str): The path of the library item on the server.
+        relPath (str): The path, relative to the library folder, of the library item.
+        isFile (bool): Whether the library item is a single file in the root of the library folder.
+        mtimeMs (int): The time (in ms since POSIX epoch) when the library item was last modified on disk.
+        ctimeMs (int): The time (in ms since POSIX epoch) when the library item status was changed on disk.
+        birthtimeMs (int): The time (in ms since POSIX epoch) when the library item was created on disk. Will be 0 if unknown.
+        addedAt (int): The time (in ms since POSIX epoch) when the library item was added to the library.
+        updatedAt (int): The time (in ms since POSIX epoch) when the library item was last updated. (Read Only)
+        isMissing (bool): Whether the library item was scanned and no longer exists.
+        isInvalid (bool): Whether the library item was scanned and no longer has media files.
+        mediaType (str): What kind of media the library item contains. Will be book or podcast.
+        media (BookMinified or PodcastMinified): The media of the library item.
+        numFiles (int):  The number of library files for the library item.
+        size (int):  The total size (in bytes) of the library item.
+    """
+    id: str
+    ino: str
+    libraryId: str
+    folderId: str
+    path: str
+    relPath: str
+    isFile: bool
+    mtimeMs: int
+    ctimeMs: int
+    birthtimeMs: int
+    addedAt: int
+    updatedAt: int
+    isMissing: bool
+    isInvalid: bool
+    mediaType: str
+    media: Union[Type['BookMinified'], Type['PodcastMinified']]
+    numFiles: int
+    size: int
+
+    def __post_init__(self):
+        # updates the media attribute from a dict to BookMinified or PodcastMinified
+        if type(self.media) is dict:
+            if self.mediaType == 'book':
+                self.media = BookMinified.from_dict(self.media)
+            else:
+                self.media = PodcastMinified.from_dict(self.media)
+
+
 @dataclass
 class LibrarySettings(Base):
     """
@@ -818,6 +870,97 @@ class LibrarySettings(Base):
     skipMatchingMediaWithAsin: bool
     skipMatchingMediaWithIsbn: bool
     autoScanCronExpression: Optional[str]
+
+
+@dataclass
+class Playlist(Base):
+    """
+    Represents a playlist.
+
+    Attributes:
+        id (str): The ID of the playlist.
+        libraryId (str): The ID of the library the playlist belongs to.
+        userId (str): The ID of the user the playlist belongs to.
+        name (str): The playlist's name.
+        description (str or None): The playlist's description. Will be None if there is none.
+        coverPath (str or None): The path of the playlist's cover. Will be None if there is no cover.
+        items (List[PlaylistItem]): The items in the playlist.
+        lastUpdate (int): The time (in ms since POSIX epoch) when the playlist was last updated.
+        createdAt (int): The time (in ms since POSIX epoch) when the playlist was created.
+    """
+    id: str
+    libraryId: str
+    userId: str
+    name: str
+    description: Optional[str]
+    coverPath: Optional[str]
+    items: List[Type['PlaylistItem']]
+    lastUpdate: int
+    createdAt: int
+
+
+@dataclass
+class PlaylistExpanded(Base):
+    """
+    Represents a playlist expanded.
+
+    Attributes:
+        id (str): The ID of the playlist.
+        libraryId (str): The ID of the library the playlist belongs to.
+        userId (str): The ID of the user the playlist belongs to.
+        name (str): The playlist's name.
+        description (str or None): The playlist's description. Will be None if there is none.
+        coverPath (str or None): The path of the playlist's cover. Will be None if there is no cover.
+        items (List[PlaylistItemExpanded]): The expanded items in the playlist.
+        lastUpdate (int): The time (in ms since POSIX epoch) when the playlist was last updated.
+        createdAt (int): The time (in ms since POSIX epoch) when the playlist was created.
+    """
+    id: str
+    libraryId: str
+    userId: str
+    name: str
+    description: Optional[str]
+    coverPath: Optional[str]
+    items: List[Type['PlaylistItemExpanded']]
+    lastUpdate: int
+    createdAt: int
+
+
+@dataclass
+class PlaylistItem(Base):
+    """
+    Represents a podcast item
+
+    Attributes:
+        libraryItemId(str):	The ID of the library item the playlist item is for.
+        episodeId(str or None):	The ID of the podcast episode the playlist item is for.
+    """
+    libraryItemId: str
+    episodeId: Optional[str]
+
+
+@dataclass
+class PlaylistItemExpanded(Base):
+    """
+    Represents a podcast item
+
+    Attributes:
+        libraryItemId(str):	The ID of the library item the playlist item is for.
+        episodeId(str or None):	The ID of the podcast episode the playlist item is for.
+        episode(PodcastEpisodeExpanded): The podcast episode the playlist item is for. Will only exist if episodeId is not null.
+        libraryItem(LibraryItemExpanded or LibraryItemMinifiedObject) The library item the playlist item is for. Will be Library Item Minified if episodeId is not null.
+    """
+    libraryItemId: str
+    episodeId: Optional[str]
+    episode: Type['PodcastEpisodeExpanded']
+    libraryItem: Union[Type['LibraryItemExpanded'], Type['LibraryItemMinified']]
+
+    def __post_init__(self):
+        if type(self.libraryItem) is dict:
+            if self.episodeId is not None:
+                self.libraryItem = LibraryItemMinified.to_dict(self.libraryItem)
+            else:
+                self.libraryItem = LibraryItemExpanded.to_dict(self.libraryItem)
 
 
 @dataclass
