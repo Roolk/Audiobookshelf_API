@@ -23,6 +23,8 @@ class AudiobookshelfAPI:
         try:
             response = requests.get(url, headers=self.headers)
             response.raise_for_status()  # Raise an exception for non-2xx status codes
+            # Uncomment line below to print the response from the server
+            #print(json.dumps(response.json(),indent=2), response.status_code)
             return response
         except requests.exceptions.RequestException as e:
             raise Exception(f"Request error: {e}")
@@ -177,19 +179,57 @@ class AudiobookshelfAPI:
         return Library.from_dict(response.json())
 
     def get_all_library_items(self, library_id: str) -> list[LibraryItem]:
+        """
+        Retrieve all library items for a specific library.
+
+        Args:
+            library_id (str): The ID of the library.
+
+        Returns:
+            List[LibraryItem]: A list of LibraryItem instances representing the library items.
+
+        Raises:
+            Exception: Raises an exception if the request to the server fails or if the response is invalid.
+        """
         url = f"{self.libraries_url}/{library_id}/items"
         response = self._send_get_request(url)
         # print(json.dumps(response.json(), indent=2))
         return [LibraryItem.from_dict(item) for item in response.json()['results']]
 
+    # untested
+    def get_all_library_podcast_episode_downloads(self, library_id: str) -> List[PodcastEpisodeDownload]:
+        url = f"{self.libraries_url}/{library_id}/episode-downloads"
+        response = self._send_get_request(url)
+        downloads = [PodcastEpisodeDownload.from_dict(response.json()['currentDownload'])]
+        for download in response.json()['queue']:
+            downloads.append(PodcastEpisodeDownload.from_dict(download))
+        return downloads
 
-# deprecieted methods that no longer work
+    def get_library_series(self, library_id: str) -> List[SeriesBooks]:
+        """
+        Does not currently work due to error in server response?
+        Args:
+            library_id:
 
-"""
-def delete_library(self, id: str) -> Library:
-    url = self.libraries_url + "/" + id
-    response = requests.delete(url, headers=self.headers)
-    return Library.from_dict(response.json())
+        Returns:
 
+        """
+        url = f"{self.libraries_url}/{library_id}/series"
+        response = self._send_get_request(url)
+        print(json.dumps(response.json(), indent=2))
+        return [SeriesBooks.from_dict(result) for result in response.json()['results']]
 
-"""
+    def get_library_collections(self, library_id: str) -> List[SeriesBooks]:
+        """
+        Does not currently work due to error in server response?
+        Args:
+            library_id:
+
+        Returns:
+
+        """
+        url = f"{self.libraries_url}/{library_id}/collections"
+        response = self._send_get_request(url)
+        #Uncomment line to print response
+        #print(json.dumps(response.json(), indent=2))
+        return [CollectionExpanded.from_dict(result) for result in response.json()['results']]
