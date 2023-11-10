@@ -17,7 +17,7 @@
 - [x] Get library items
 - [ ] Remove Library Items with issues
 - [ ] Get a library podcast episode download
-- [ ] Get a Library's series
+- [ ] Get a Library's series, non-functional
 - [ ] Get a Library's Collections
 - [ ] Get a Library's User Playlists
 - [ ] Get a library's Personalized View
@@ -228,7 +228,7 @@
 - [x] Library Settings
 - [x] Library Filter Dta
 - [x] Folder
-- [x] Library Item
+- [ ] Library Item
 - [x] Book
 - [x] Book Metadata
 - [x] Book Chapter

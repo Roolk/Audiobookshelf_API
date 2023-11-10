@@ -500,6 +500,56 @@ class BookMetadataMinified(Base):
     language: Optional[str]
     explicit: bool
 
+@dataclass
+class Collection(Base):
+    """
+    Represents a collection.
+
+    Attributes:
+        id (str): The ID of the collection.
+        libraryId (str): The ID of the library the collection belongs to.
+        userId (str): The ID of the user that created the collection.
+        name (str): The name of the collection.
+        description (str or None): The collection's description. Will be None if there is none.
+        books (List[LibraryItem]): The books that belong to the collection.
+        lastUpdate (int): The time (in ms since POSIX epoch) when the collection was last updated.
+        createdAt (int): The time (in ms since POSIX epoch) when the collection was created.
+    """
+    id: str
+    libraryId: str
+    userId: str
+    name: str
+    description: Optional[str]
+    books: List[Type['LibraryItem']]
+    lastUpdate: int
+    createdAt: int
+
+
+
+@dataclass
+class CollectionExpanded(Base):
+    """
+    Represents a collection.
+
+    Attributes:
+        id (str): The ID of the collection.
+        libraryId (str): The ID of the library the collection belongs to.
+        userId (str): The ID of the user that created the collection.
+        name (str): The name of the collection.
+        description (str or None): The collection's description. Will be None if there is none.
+        books (List[LibraryItemExpanded]): The books that belong to the collection.
+        lastUpdate (int): The time (in ms since POSIX epoch) when the collection was last updated.
+        createdAt (int): The time (in ms since POSIX epoch) when the collection was created.
+    """
+    id: str
+    libraryId: str
+    userId: str
+    name: str
+    description: Optional[str]
+    books: List[Type['LibraryItemExpanded']]
+    lastUpdate: int
+    createdAt: int
+
 
 @dataclass
 class EBookFile(Base):
@@ -684,11 +734,71 @@ class LibraryItem(Base):
     def __post_init__(self):
         # updates the media attribute from a dict to Book or Podcast
         if type(self.media) is dict:
-            if self.mediaType is 'book':
+            if self.mediaType == 'book':
                 self.media = Book.from_dict(self.media)
             else:
                 self.media = Podcast.from_dict(self.media)
 
+
+
+@dataclass
+class LibraryItemExpanded(Base):
+    """
+    Represents an expanded version of a library item.
+
+    Attributes:
+        id (str): The ID of the library item.
+        ino (str): The inode of the library item.
+        libraryId (str): The ID of the library the item belongs to.
+        folderId (str): The ID of the folder the library item is in.
+        path (str): The path of the library item on the server.
+        relPath (str): The path, relative to the library folder, of the library item.
+        isFile (bool): Whether the library item is a single file in the root of the library folder.
+        mtimeMs (int): The time (in ms since POSIX epoch) when the library item was last modified on disk.
+        ctimeMs (int): The time (in ms since POSIX epoch) when the library item status was changed on disk.
+        birthtimeMs (int): The time (in ms since POSIX epoch) when the library item was created on disk.
+            Will be 0 if unknown.
+        addedAt (int): The time (in ms since POSIX epoch) when the library item was added to the library.
+        updatedAt (int): The time (in ms since POSIX epoch) when the library item was last updated.
+        lastScan (int or None): The time (in ms since POSIX epoch) when the library item was last scanned.
+            Will be None if the server has not yet scanned the library item.
+        scanVersion (str or None): The version of the scanner when last scanned.
+            Will be None if it has not been scanned.
+        isMissing (bool): Whether the library item was scanned and no longer exists.
+        isInvalid (bool): Whether the library item was scanned and no longer has media files.
+        mediaType (str): What kind of media the library item contains. Will be book or podcast.
+        media (BookExpanded or PodcastExpanded): The expanded media object of the library item.
+        libraryFiles (List[LibraryFile]): The files of the library item.
+        size (int): The total size (in bytes) of the library item.
+    """
+    id: str
+    ino: str
+    libraryId: str
+    folderId: str
+    path: str
+    relPath: str
+    isFile: bool
+    mtimeMs: int
+    ctimeMs: int
+    birthtimeMs: int
+    addedAt: int
+    updatedAt: int
+    lastScan: Optional[int]
+    scanVersion: Optional[str]
+    isMissing: bool
+    isInvalid: bool
+    mediaType: str
+    media: Union[Type['BookExpanded'], Type['PodcastExpanded']]
+    libraryFiles: List[LibraryFile]
+    size: int
+
+    def __post_init__(self):
+        # updates the media attribute from a dict to Book or Podcast
+        if type(self.media) is dict:
+            if self.mediaType == 'book':
+                self.media = BookExpanded.from_dict(self.media)
+            else:
+                self.media = PodcastExpanded.from_dict(self.media)
 
 @dataclass
 class LibrarySettings(Base):
