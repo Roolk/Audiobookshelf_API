@@ -4,7 +4,7 @@ from typing import Optional, List, Union, Type
 
 __all__ = ['AudioFile', 'AudioMetaTags', 'AudioTrack', 'Author', 'AuthorExpanded', 'AuthorMinified', 'Book',
            'BookExpanded', 'BookMinified', 'BookMetadata', 'BookMetadataExpanded', 'BookMetadataMinified', 'Collection',
-           'CollectionExpanded','EBookFile', 'FileMetadata', 'Folder', 'Library', 'LibraryFile', 'LibraryFilterData',
+           'CollectionExpanded', 'EBookFile', 'FileMetadata', 'Folder', 'Library', 'LibraryFile', 'LibraryFilterData',
            'LibraryItem', 'LibrarySettings', 'Playlist', 'PlaylistExpanded', 'PlaylistItem', 'PlaylistItemExpanded', 'Podcast', 'PodcastExpanded', 'PodcastMinified', 'PodcastEpisode',
            'PodcastEpisodeExpanded', 'PodcastEpisodeDownload', 'PodcastEpisodeEnclosure', 'PodcastMetadata',
            'PodcastMetadataExpanded', 'PodcastMetadataMinified', 'Series', 'SeriesBooks', 'SeriesNumBooks',
