@@ -228,7 +228,7 @@
 - [x] Library Settings
 - [x] Library Filter Dta
 - [x] Folder
-- [ ] Library Item
+- [x] Library Item
 - [x] Book
 - [x] Book Metadata
 - [x] Book Chapter
@@ -248,8 +248,8 @@
 - [x] Author
 - [x] Series
 - [ ] Collections
-- [ ] Playlist
-- [ ] Playlist Item
+- [x] Playlist
+- [x] Playlist Item: note union get from dict may not work
 - [ ] Media Progress
 - [ ] Playback Session
 - [ ] Device Info
