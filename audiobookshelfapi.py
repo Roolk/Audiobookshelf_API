@@ -219,9 +219,8 @@ class AudiobookshelfAPI:
         print(json.dumps(response.json(), indent=2))
         return [SeriesBooks.from_dict(result) for result in response.json()['results']]
 
-    def get_library_collections(self, library_id: str) -> List[SeriesBooks]:
+    def get_library_collections(self, library_id: str) -> List[CollectionExpanded]:
         """
-        Does not currently work due to error in server response?
         Args:
             library_id:
 
@@ -233,3 +232,8 @@ class AudiobookshelfAPI:
         #Uncomment line to print response
         #print(json.dumps(response.json(), indent=2))
         return [CollectionExpanded.from_dict(result) for result in response.json()['results']]
+
+    def get_user_playlists(self, library_id: str):
+        url = f"{self.libraries_url}/{library_id}/playlists"
+        response = self._send_get_request(url)
+        return [PlaylistExpanded.from_dict(result) for result in response.json()['results']]
