@@ -16,6 +16,7 @@ class AudiobookshelfAPI:
         self.base_url = url
         self.api_url = self.base_url + "/api"
         self.libraries_url = self.api_url + '/libraries'
+        self.items_url = self.api_url + '/items'
         if not self.ping():
             raise "Failed to ping server"
 
@@ -24,7 +25,7 @@ class AudiobookshelfAPI:
             response = requests.get(url, headers=self.headers)
             response.raise_for_status()  # Raise an exception for non-2xx status codes
             # Uncomment line below to print the response from the server
-            #print(json.dumps(response.json(),indent=2), response.status_code)
+            print(json.dumps(response.json(),indent=2), response.status_code)
             return response
         except requests.exceptions.RequestException as e:
             raise Exception(f"Request error: {e}")
@@ -233,7 +234,13 @@ class AudiobookshelfAPI:
         #print(json.dumps(response.json(), indent=2))
         return [CollectionExpanded.from_dict(result) for result in response.json()['results']]
 
+    #tested?
     def get_user_playlists(self, library_id: str):
         url = f"{self.libraries_url}/{library_id}/playlists"
         response = self._send_get_request(url)
         return [PlaylistExpanded.from_dict(result) for result in response.json()['results']]
+
+    def temp(self, itemID: str):
+        url = f"{self.items_url}/{itemID}/media"
+        response = self._send_patch_request(url, {})
+        return response
