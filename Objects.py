@@ -281,7 +281,7 @@ class Book(Base):
     Represents a book.
 
     Attributes:
-      libraryItemId (str): The ID of the library item that contains the book.
+      id (str): The ID of the library item that contains the book.
       metadata (BookMetadata): The book's metadata.
       coverPath (str or None): The absolute path on the server of the cover file. Will be None if there is no cover.
       tags (list of str): The book's tags.
@@ -290,7 +290,7 @@ class Book(Base):
       missingParts (list of int): Any parts missing from the book by track index.
       ebookFile (EBookFile or None): The book's ebook file. Will be None if this is an audiobook.
     """
-    libraryItemId: str
+    id: str
     metadata: Type['BookMetadata']
     coverPath: Optional[str]
     tags: List[str]
