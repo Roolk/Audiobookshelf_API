@@ -17,15 +17,18 @@ class AudiobookshelfAPI:
         self.api_url = self.base_url + "/api"
         self.libraries_url = self.api_url + '/libraries'
         self.items_url = self.api_url + '/items'
+        self.tools_url = self.api_url + '/tools/item'
         if not self.ping():
             raise "Failed to ping server"
 
-    def _send_get_request(self, url: str) -> requests.Response:
+    def _send_get_request(self, url: str, json_data: dict = None) -> requests.Response:
+        if json_data is None:
+            json_data = {}
         try:
-            response = requests.get(url, headers=self.headers)
+            response = requests.get(url, headers=self.headers, json=json_data)
             response.raise_for_status()  # Raise an exception for non-2xx status codes
             # Uncomment line below to print the response from the server
-            print(json.dumps(response.json(),indent=2), response.status_code)
+            #print(json.dumps(response.json(), indent=4), response.status_code)
             return response
         except requests.exceptions.RequestException as e:
             raise Exception(f"Request error: {e}")
@@ -36,6 +39,20 @@ class AudiobookshelfAPI:
         try:
             response = requests.patch(url, headers=self.headers, json=json_data)
             response.raise_for_status()  # Raise an exception for non-2xx status codes
+            return response
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Request error: {e}")
+        except json.JSONDecodeError as e:
+            raise Exception(f"JSON parsing error: {e}")
+
+    def _send_post_request(self, url: str, json_data: dict = None) -> requests.Response:
+        if json_data is None:
+            json_data = {}
+        try:
+            response = requests.post(url, headers=self.headers, json=json_data)
+            response.raise_for_status()  # Raise an exception for non-2xx status codes
+            # Uncomment line below to print the response from the server
+            #print(json.dumps(response.json(), indent=4), response.status_code)
             return response
         except requests.exceptions.RequestException as e:
             raise Exception(f"Request error: {e}")
@@ -194,7 +211,6 @@ class AudiobookshelfAPI:
         """
         url = f"{self.libraries_url}/{library_id}/items"
         response = self._send_get_request(url)
-        # print(json.dumps(response.json(), indent=2))
         return [LibraryItem.from_dict(item) for item in response.json()['results']]
 
     # untested
@@ -230,16 +246,21 @@ class AudiobookshelfAPI:
         """
         url = f"{self.libraries_url}/{library_id}/collections"
         response = self._send_get_request(url)
-        #Uncomment line to print response
-        #print(json.dumps(response.json(), indent=2))
+        # Uncomment line to print response
+        # print(json.dumps(response.json(), indent=2))
         return [CollectionExpanded.from_dict(result) for result in response.json()['results']]
 
-    #tested?
+    # tested?
     def get_user_playlists(self, library_id: str):
         url = f"{self.libraries_url}/{library_id}/playlists"
         response = self._send_get_request(url)
         return [PlaylistExpanded.from_dict(result) for result in response.json()['results']]
 
+    def post_encode_m4b(self, book_id: str):
+        url = f"{self.tools_url}/{book_id}/encode-m4b"
+        #print(url)
+        response = self._send_post_request(url)
+        return response
     def temp(self, itemID: str):
         url = f"{self.items_url}/{itemID}/media"
         response = self._send_patch_request(url, {})
